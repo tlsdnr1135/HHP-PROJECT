@@ -1,5 +1,8 @@
 package io.hhplus.tdd.point;
 
+import io.hhplus.tdd.database.PointHistoryTable;
+import io.hhplus.tdd.database.UserPointTable;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -7,19 +10,25 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/point")
 public class PointController {
 
     private static final Logger log = LoggerFactory.getLogger(PointController.class);
 
+    private final PointService pointService;
+
+    private final UserPointTable userPointTable; //포인트
+    private final PointHistoryTable pointHistoryTable; //기록
+
     /**
      * TODO - 특정 유저의 포인트를 조회하는 기능을 작성해주세요.
      */
     @GetMapping("{id}")
-    public UserPoint point(
+    public Long point(
             @PathVariable long id
     ) {
-        return new UserPoint(0, 0, 0);
+        return pointService.getPoint(id);
     }
 
     /**
@@ -29,7 +38,8 @@ public class PointController {
     public List<PointHistory> history(
             @PathVariable long id
     ) {
-        return List.of();
+        List<PointHistory> pointHistory = pointService.getPointHistory(id);
+        return pointHistory;
     }
 
     /**
@@ -40,7 +50,7 @@ public class PointController {
             @PathVariable long id,
             @RequestBody long amount
     ) {
-        return new UserPoint(0, 0, 0);
+        return pointService.charge(id, amount);
     }
 
     /**
@@ -51,6 +61,6 @@ public class PointController {
             @PathVariable long id,
             @RequestBody long amount
     ) {
-        return new UserPoint(0, 0, 0);
+        return pointService.use(id, amount);
     }
 }
